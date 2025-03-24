@@ -22,7 +22,7 @@ ImageCompressionGUI::ImageCompressionGUI(QWidget *parent) : QWidget(parent) {
     mainLayout->setSpacing(20);
     
     // Title
-    QLabel *titleLabel = new QLabel("IMAGE COMPRESSION", this);
+    QLabel *titleLabel = new QLabel("Image Compression using Huffman Image Compression", this);
     titleLabel->setAlignment(Qt::AlignCenter);
     titleLabel->setStyleSheet("font-family: 'Segoe UI', Arial; font-size: 22px; font-weight: 300; letter-spacing: 2px; color:rgb(0, 0, 0); margin-bottom: 10px;");
     mainLayout->addWidget(titleLabel);
@@ -30,7 +30,7 @@ ImageCompressionGUI::ImageCompressionGUI(QWidget *parent) : QWidget(parent) {
     // Subtitle
     QLabel *subtitleLabel = new QLabel("Compress and decompress your images", this);
     subtitleLabel->setAlignment(Qt::AlignCenter);
-    subtitleLabel->setStyleSheet("font-family: 'Segoe UI', Arial; font-size: 12px; color: #666666; margin-bottom: 30px;");
+    subtitleLabel->setStyleSheet("font-family: 'Segoe UI', Arial; font-size: 16px; color: #666666; margin-bottom: 30px;");
     mainLayout->addWidget(subtitleLabel);
     
     // Create card container
@@ -105,7 +105,7 @@ ImageCompressionGUI::ImageCompressionGUI(QWidget *parent) : QWidget(parent) {
     statusLabel = new QLabel("Select an operation to begin", this);
     statusLabel->setAlignment(Qt::AlignCenter);
     statusLabel->setWordWrap(true);
-    statusLabel->setStyleSheet("color: #666666; font-family: 'Segoe UI', Arial; font-size: 13px; margin-top: 10px;");
+    statusLabel->setStyleSheet("color: #666666; font-family: 'Segoe UI', Arial; font-size: 14px; margin-top: 10px;");
     cardLayout->addWidget(statusLabel);
     
     // Add card to main layout
@@ -160,7 +160,7 @@ void ImageCompressionGUI::handleCompression() {
             QString("<b>Compression Complete! 🚀</b><br>Original: <b>%1 KB</b> → Compressed: <b>%2 KB</b><br>Saved as: <i>%3</i>")
             .arg(originalSize / 1024).arg(compressedSize / 1024).arg(compressedImage)
         );
-        statusLabel->setStyleSheet("color: #4CAF50; font-size: 12px;");
+        statusLabel->setStyleSheet("color: #4CAF50; font-size: 16px;");
     } else {
         qDebug() << "No file selected.";
         statusLabel->setText("❌ No file selected.");
