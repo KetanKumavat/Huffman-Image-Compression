@@ -125,7 +125,9 @@ void ImageCompressionGUI::handleCompression() {
         QDir().mkpath(outputDir);
 
         QString binFile = outputDir + baseName;
-        QString compressedImage = binFile + ".jpg";
+        
+        // This should match the compressImage() function's naming pattern
+        QString compressedImage = binFile + "_compressed.jpg";
 
         QFile inputFile(filePath);
         qint64 originalSize = inputFile.size();
@@ -136,7 +138,19 @@ void ImageCompressionGUI::handleCompression() {
         compressImage(filePath.toStdString(), binFile.toStdString());
 
         QFile outputFile(compressedImage);
-        qint64 compressedSize = outputFile.size();
+        qint64 compressedSize = 0;
+        
+        if (outputFile.exists()) {
+            compressedSize = outputFile.size();
+        } else {
+            qDebug() << "Warning: Compressed file not found at expected location: " << compressedImage;
+            QString binFileLocation = binFile + ".bin";
+            QFile binFileCheck(binFileLocation);
+            if (binFileCheck.exists()) {
+                compressedSize = binFileCheck.size();
+                compressedImage = binFileLocation;
+            }
+        }
 
         qDebug() << "Compression finished.";
         qDebug() << "Original Size:" << originalSize / 1024 << "KB";

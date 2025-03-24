@@ -3,7 +3,6 @@
 void compressImage(const std::string &imagePath, const std::string &outputPath) {
     std::cout << "Compressing: " << imagePath << " -> " << outputPath << std::endl;
     
-    // Load image in grayscale
     cv::Mat img = cv::imread(imagePath, cv::IMREAD_COLOR);
     if (img.empty()) {
         std::cerr << "Error loading image!" << std::endl;
@@ -32,7 +31,7 @@ void compressImage(const std::string &imagePath, const std::string &outputPath) 
 
     // Save compressed image as JPEG
     std::vector<int> compressionParams = {cv::IMWRITE_JPEG_QUALITY, 50}; // Adjust quality
-    std::string compressedImagePath = outputPath + ".jpg";
+    std::string compressedImagePath = outputPath + "_compressed" + ".jpg";
     if (!cv::imwrite(compressedImagePath, img, compressionParams)) {
         std::cerr << "Error saving compressed image!" << std::endl;
     } else {
