@@ -47,7 +47,7 @@ void ImagePreviewLabel::updateScaledPixmap() {
 ImageCompressionGUI::ImageCompressionGUI(QWidget *parent) : QWidget(parent), compressionQuality(50) {
     // Set window properties
     this->setWindowTitle("Image Compression");
-    this->resize(700, 700);
+    this->resize(800, 700);
     this->setStyleSheet("background-color: #F5F5F5; color: #333333;");
     this->setAcceptDrops(true);
 
@@ -56,7 +56,7 @@ ImageCompressionGUI::ImageCompressionGUI(QWidget *parent) : QWidget(parent), com
     previewLabel = new ImagePreviewLabel(this);
     originalImageBtn = new QPushButton("Original", this);
     compressedImageBtn = new QPushButton("Compressed", this);
-    qualityLabel = new QLabel("Compression Quality: 50%", this);
+    qualityLabel = new QLabel("Compression Quality: 100%", this);
     qualitySlider = new QSlider(Qt::Horizontal, this);
     statusLabel = new QLabel("Drag and drop images or click 'Add Files'", this);
     
@@ -95,7 +95,7 @@ ImageCompressionGUI::ImageCompressionGUI(QWidget *parent) : QWidget(parent), com
     
     // Compression Quality Section
     QHBoxLayout *qualityLayout = new QHBoxLayout();
-    qualitySlider->setRange(10, 90);
+    qualitySlider->setRange(10, 50);
     qualitySlider->setValue(50);
     qualityLayout->addWidget(new QLabel("Low"));
     qualityLayout->addWidget(qualitySlider);
@@ -342,7 +342,8 @@ void ImageCompressionGUI::dropEvent(QDropEvent *event) {
 
 void ImageCompressionGUI::updateCompressionQuality(int value) {
     compressionQuality = value;
-    qualityLabel->setText(QString("Compression Quality: %1%").arg(value));
+    int displayValue = value * 2;
+    qualityLabel->setText(QString("Compression Quality: %1%").arg(displayValue));
 }
 
 void ImageCompressionGUI::removeSelectedFiles() {
