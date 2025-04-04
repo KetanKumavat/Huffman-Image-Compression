@@ -10,6 +10,8 @@
 #include <QStyledItemDelegate>
 #include <QMessageBox>
 
+using namespace std;
+
 ImagePreviewLabel::ImagePreviewLabel(QWidget *parent) : QLabel(parent) {
     setAlignment(Qt::AlignCenter);
     setStyleSheet("background-color: #F0F0F0; border: 2px dashed #CCCCCC; border-radius: 10px;");
@@ -297,7 +299,7 @@ void ImageCompressionGUI::updatePreview(QListWidgetItem *current) {
         
         // Update metadata
         updateMetadata(imagePath);
-    } catch (const std::exception& e) {
+    } catch (const exception& e) {
         QMessageBox::warning(this, "Preview Error", 
             QString("Could not preview image: %1").arg(e.what()));
     }
@@ -382,7 +384,7 @@ void ImageCompressionGUI::handleBatchCompression() {
         QFile inputFile(filePath);
         qint64 originalSize = inputFile.size();
 
-        std::vector<int> compressionParams = {cv::IMWRITE_JPEG_QUALITY, compressionQuality};
+        vector<int> compressionParams = {cv::IMWRITE_JPEG_QUALITY, compressionQuality};
         QString compressedImage = binFile + "_compressed.jpg";
 
         try {
@@ -414,7 +416,7 @@ void ImageCompressionGUI::handleBatchCompression() {
             );
 
             successCount++;
-        } catch (const std::exception& e) {
+        } catch (const exception& e) {
             statusLabel->setText(QString("Error compressing %1: %2")
                 .arg(fileInfo.fileName())
                 .arg(e.what()));

@@ -7,6 +7,8 @@
 #include <vector>
 #include <fstream>
 
+using namespace std;
+
 struct Node {
     char data;
     int freq;
@@ -20,10 +22,10 @@ struct Compare {
     }
 };
 
-void buildHuffmanTree(const std::string &data, std::unordered_map<char, std::string> &codes, std::unordered_map<std::string, char> &reverseCodes, Node* &root);
-std::string encode(const std::string &data, std::unordered_map<char, std::string> &codes);
-std::string decode(const std::string &encodedData, std::unordered_map<std::string, char> &reverseCodes);
-void saveHuffmanCodes(const std::string &filePath, std::unordered_map<char, std::string> &codes);
-bool loadHuffmanCodes(const std::string &filePath, std::unordered_map<char, std::string> &codes, std::unordered_map<std::string, char> &reverseCodes);
+void buildHuffmanTree(const string &data, unordered_map<char, string> &codes, unordered_map<string, char> &reverseCodes, Node* &root);
+string encode(const string &data, unordered_map<char, string> &codes);
+string decode(const string &encodedData, unordered_map<string, char> &reverseCodes);
+void saveHuffmanCodes(const string &filePath, unordered_map<char, string> &codes);
+bool loadHuffmanCodes(const string &filePath, unordered_map<char, string> &codes, unordered_map<string, char> &reverseCodes);
 
 #endif

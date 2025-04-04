@@ -42,6 +42,8 @@
 #include <QPixmap>
 #include <QImageReader>
 
+using namespace std;
+
 class ImagePreviewLabel : public QLabel {
     Q_OBJECT
 
