@@ -18,10 +18,8 @@ ImagePreviewLabel::ImagePreviewLabel(QWidget *parent) : QLabel(parent) {
 }
 
 void ImagePreviewLabel::setPixmap(const QString &imagePath) {
-    // Load the original pixmap
     originalPixmap = QPixmap(imagePath);
     
-    // Update scaled pixmap to fit the label
     updateScaledPixmap();
 }
 
@@ -36,7 +34,6 @@ void ImagePreviewLabel::updateScaledPixmap() {
         return;
     }
 
-    // Scale pixmap to fit label while maintaining aspect ratio
     QPixmap scaledPixmap = originalPixmap.scaled(
         size(), 
         Qt::KeepAspectRatio, 
@@ -47,13 +44,11 @@ void ImagePreviewLabel::updateScaledPixmap() {
 }
 
 ImageCompressionGUI::ImageCompressionGUI(QWidget *parent) : QWidget(parent), compressionQuality(50) {
-    // Set window properties
     this->setWindowTitle("Image Compression");
     this->resize(800, 700);
     this->setStyleSheet("background-color: #F5F5F5; color: #333333;");
     this->setAcceptDrops(true);
 
-    // Initialize all widgets first
     fileListWidget = new QListWidget(this);
     previewLabel = new ImagePreviewLabel(this);
     originalImageBtn = new QPushButton("Original", this);
@@ -62,7 +57,6 @@ ImageCompressionGUI::ImageCompressionGUI(QWidget *parent) : QWidget(parent), com
     qualitySlider = new QSlider(Qt::Horizontal, this);
     statusLabel = new QLabel("Drag and drop images or click 'Add Files'", this);
     
-    // Main layout
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setContentsMargins(30, 40, 30, 40);
     mainLayout->setSpacing(20);
@@ -244,16 +238,13 @@ ImageCompressionGUI::ImageCompressionGUI(QWidget *parent) : QWidget(parent), com
     buttonLayout->addWidget(compressButton);
     cardLayout->addLayout(buttonLayout);
     
-    // Status label
     statusLabel->setAlignment(Qt::AlignCenter);
     statusLabel->setWordWrap(true);
     statusLabel->setStyleSheet("color: #666666; font-family: 'Segoe UI', Arial; font-size: 14px; margin-top: 10px;");
     cardLayout->addWidget(statusLabel);
     
-    // Add card to main layout
     mainLayout->addWidget(cardFrame);
     
-    // Connect signals and slots
     connect(fileListWidget, &QListWidget::currentItemChanged, 
             this, &ImageCompressionGUI::updatePreview);
     connect(originalImageBtn, &QPushButton::clicked, 
@@ -281,10 +272,8 @@ void ImageCompressionGUI::updatePreview(QListWidgetItem *current) {
     QString imagePath = current->text();
     
     try {
-        // Attempt to load and preview the image
         previewLabel->setPixmap(imagePath);
         
-        // Check if we have a compressed version of this file
         if (compressedFilePaths.contains(imagePath)) {
             lastCompressedImagePath = compressedFilePaths[imagePath];
             compressedImageBtn->setEnabled(true);
@@ -293,11 +282,9 @@ void ImageCompressionGUI::updatePreview(QListWidgetItem *current) {
             compressedImageBtn->setEnabled(false);
         }
         
-        // Always show original image when selection changes
         originalImageBtn->setChecked(true);
         compressedImageBtn->setChecked(false);
         
-        // Update metadata
         updateMetadata(imagePath);
     } catch (const exception& e) {
         QMessageBox::warning(this, "Preview Error", 
@@ -316,14 +303,14 @@ void ImageCompressionGUI::dropEvent(QDropEvent *event) {
     
     if (mimeData->hasUrls()) {
         QList<QUrl> urlList = mimeData->urls();
+        bool wasEmpty = (fileListWidget->count() == 0);
+        int firstNewItemIndex = -1;
         
         for (const QUrl &url : urlList) {
             QString filePath = url.toLocalFile();
             QFileInfo fileInfo(filePath);
             
-            // Check if it's an image file
             if (fileInfo.suffix().toLower().contains(QRegExp("(png|jpg|jpeg|bmp)"))) {
-                // Prevent duplicates
                 bool isDuplicate = false;
                 for (int i = 0; i < fileListWidget->count(); ++i) {
                     if (fileListWidget->item(i)->text() == filePath) {
@@ -334,8 +321,17 @@ void ImageCompressionGUI::dropEvent(QDropEvent *event) {
                 
                 if (!isDuplicate) {
                     fileListWidget->addItem(filePath);
+                    
+                    //for preview
+                    if (firstNewItemIndex == -1) {
+                        firstNewItemIndex = fileListWidget->count() - 1;
+                    }
                 }
             }
+        }
+        
+        if ((wasEmpty || !fileListWidget->currentItem()) && firstNewItemIndex != -1) {
+            fileListWidget->setCurrentRow(firstNewItemIndex);
         }
         
         event->acceptProposedAction();
@@ -353,10 +349,32 @@ void ImageCompressionGUI::removeSelectedFiles() {
 }
 
 void ImageCompressionGUI::handleCompression() {
-    QString filePath = QFileDialog::getOpenFileName(this, "Select Image to Compress", "", "Images (*.png *.jpg *.bmp)");
-    if (!filePath.isEmpty()) {
-        fileListWidget->clear();
-        fileListWidget->addItem(filePath);
+    QStringList filePaths = QFileDialog::getOpenFileNames(this, "Select Images to Compress", "", "Images (*.png *.jpg *.bmp)");
+    if (!filePaths.isEmpty()) {
+        bool wasEmpty = (fileListWidget->count() == 0);
+        int firstNewItemIndex = -1;
+        for (const QString &filePath : filePaths) {
+            //prevent duplicates
+            bool isDuplicate = false;
+            for (int i = 0; i < fileListWidget->count(); ++i) {
+                if (fileListWidget->item(i)->text() == filePath) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+            if (!isDuplicate) {
+                QListWidgetItem* item = new QListWidgetItem(filePath);
+                fileListWidget->addItem(item);
+                
+                //for preview
+                if (firstNewItemIndex == -1) {
+                    firstNewItemIndex = fileListWidget->count() - 1;
+                }
+            }
+        }
+        if ((wasEmpty || !fileListWidget->currentItem()) && firstNewItemIndex != -1) {
+            fileListWidget->setCurrentRow(firstNewItemIndex);
+        }
     }
 }
 
@@ -370,7 +388,6 @@ void ImageCompressionGUI::handleBatchCompression() {
     QString outputDir = "../output/";
     QDir().mkpath(outputDir);
 
-    // Progress tracking
     int totalFiles = fileListWidget->count();
     int successCount = 0;
     int failCount = 0;
@@ -396,10 +413,8 @@ void ImageCompressionGUI::handleBatchCompression() {
             if (outputFile.exists()) {
                 compressedSize = outputFile.size();
                 
-                // Store the mapping for all successfully compressed files
                 compressedFilePaths[filePath] = compressedImage;
                 
-                // Update UI only if this is the currently selected item
                 if (fileListWidget->currentItem() && fileListWidget->currentItem()->text() == filePath) {
                     lastCompressedImagePath = compressedImage;
                     compressedImageBtn->setEnabled(true);
@@ -407,7 +422,6 @@ void ImageCompressionGUI::handleBatchCompression() {
                 }
             }
             
-            // Update status for each file
             statusLabel->setText(
                 QString("Compressed: %1\nOriginal: %2 KB → Compressed: %3 KB")
                 .arg(fileInfo.fileName())
@@ -423,11 +437,9 @@ void ImageCompressionGUI::handleBatchCompression() {
             failCount++;
         }
 
-        // Slight delay to update UI
         QApplication::processEvents();
     }
 
-    // Final summary
     statusLabel->setText(
         QString("Batch Compression Complete\n ✅ Successful: %1 | ❌ Failed: %2")
         .arg(successCount).arg(failCount)
@@ -470,12 +482,10 @@ void ImageCompressionGUI::updateMetadata(const QString &filePath) {
         return;
     }
     
-    // Get basic file info
     QString fileName = fileInfo.fileName();
     qint64 sizeInBytes = fileInfo.size();
     QString lastModified = fileInfo.lastModified().toString("yyyy-MM-dd hh:mm:ss");
     
-    // Get image dimensions if possible
     QString dimensions = "Unknown";
     try {
         QImage img(path);
@@ -483,10 +493,8 @@ void ImageCompressionGUI::updateMetadata(const QString &filePath) {
             dimensions = QString("%1 x %2").arg(img.width()).arg(img.height());
         }
     } catch (...) {
-        // Ignore errors when getting dimensions
     }
     
-    // Format file size
     QString sizeStr;
     if (sizeInBytes < 1024) {
         sizeStr = QString("%1 bytes").arg(sizeInBytes);
@@ -496,7 +504,6 @@ void ImageCompressionGUI::updateMetadata(const QString &filePath) {
         sizeStr = QString("%1 MB").arg(sizeInBytes / (1024.0 * 1024.0), 0, 'f', 2);
     }
     
-    // Update metadata display
     metadataLabel->setText(QString(
         "<table style='margin-top:5px;'>"
         "<tr><td><b>File:</b></td><td>%1</td></tr>"

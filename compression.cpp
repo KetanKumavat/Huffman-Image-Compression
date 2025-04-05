@@ -11,7 +11,7 @@ void compressImage(const string &imagePath, const string &outputPath,
         throw runtime_error("Error loading image!");
     }
 
-    // Convert pixel data to string
+    // Converting pixel data to string
     string pixelData(img.begin<unsigned char>(), img.end<unsigned char>());
 
     // Huffman Encoding
